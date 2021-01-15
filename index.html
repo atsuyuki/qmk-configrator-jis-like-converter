@@ -1,0 +1,160 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://newcss.net/new.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
+    </style>
+
+    <style>
+        * {
+            font-family: 'Noto Sans JP', sans-serif;
+
+            margin: 10;
+
+        }
+
+        textarea,
+        button {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>QMK Configuratorのキーマップを、ナンチャッテJIS対応に変換するスクリプト</h1>
+    <h2>Overview</h2>
+    <p>
+        <a href="https://config.qmk.fm/" target="_brank">QMK
+            Configurator</a>によって内部的にはUS配列で設定されている自作キーボードが、OSにはJIS配列として認識されてしまう環境で、記号を正しく入力できるようにキーコードを変換するスクリプトです。
+    </p>
+    <p>
+        本当はQMK_firmwareのkeymap_jp.hを使いたいけれど、QMK環境のセットアップに挫折した、そんなあなたへ。
+    </p>
+    <h2>Usage</h2>
+    <ol>
+        <li>QMK Configuratorでキーマップを作成して、Keymap.jsonをエクスポートする</li>
+        <li>jsonファイルの内容を「INPUT」ボックスにコピペする</li>
+        <li>「CONVERT」ボタンを押す</li>
+        <li>「OUTPUT」ボックスの中身をjsonファイルとして保存して、QMK Configurator にインポートする</li>
+        <li>あとはよしなに</li>
+    </ol>
+
+    <form>
+
+        <label>INPUT</label><br>
+        <textarea id="input"></textarea>
+        <button onclick="execute_convert()">▼▼▼▼▼ Convert & Download Keymap.json ▼▼▼▼▼</button>
+        <label>OUTPUT</label><br>
+        <textarea id="output"></textarea>
+    </form>
+
+    <h2>Memo</h2>
+    <ul>
+        <li>変換できるのは、QMK Configuratorの「Shifted Symbles」欄から選んだ記号です。S(KC_2)とかで設定したキーは、いまのところ変換できません。</li>
+        <li>バグがあるかも。</li>
+    </ul>
+</body>
+
+<script>
+    /*
+    let mymap = {
+        "version": 1,
+        "notes": "",
+        "documentation": "\"This file is a QMK Configurator export. You can import this at <https://config.qmk.fm>. It can also be used directly with QMK's source code.\n\nTo setup your QMK environment check out the tutorial: <https://docs.qmk.fm/#/newbs>\n\nYou can convert this file to a keymap.c using this command: `qmk json2c {keymap}`\n\nYou can compile this keymap using this command: `qmk compile {keymap}`\"\n",
+        "keyboard": "handwired/dactyl_manuform/4x5",
+        "keymap": "mymap",
+        "layout": "LAYOUT",
+        "layers": [
+            ["KC_Q", "KC_W", "KC_E", "KC_R", "KC_T", "KC_Y", "KC_U", "KC_I", "KC_O", "KC_P", "KC_A", "KC_S", "KC_D", "KC_F", "KC_G", "KC_H", "KC_J", "KC_K", "KC_L", "KC_MINS", "KC_Z", "KC_X", "KC_C", "KC_V", "KC_B", "KC_N", "KC_M", "KC_COMM", "KC_DOT", "KC_QUES", "KC_ESC", "KC_LALT", "KC_DQUO", "KC_EQL", "LCTL_T(KC_TAB)", "LT(1,KC_SPC)", "KC_BSPC", "KC_ENT", "MO(2)", "KC_LSFT", "KC_UP", "KC_RGHT", "LT(3,KC_ENT)", "KC_LGUI", "KC_LEFT", "KC_DOWN"],
+            ["RESET", "KC_UP", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_7", "KC_8", "KC_9", "KC_LEFT", "KC_DOWN", "KC_RGHT", "KC_MHEN", "KC_NO", "KC_NO", "KC_HENK", "KC_4", "KC_5", "KC_6", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_1", "KC_2", "KC_3", "KC_NO", "KC_NO", "KC_0", "KC_PDOT", "KC_NO", "KC_TRNS", "KC_DEL", "KC_NO", "KC_NO", "KC_NO", "KC_PGUP", "KC_END", "KC_NO", "KC_NO", "KC_HOME", "KC_PGDN"],
+            ["KC_DLR", "KC_JYEN", "KC_PIPE", "KC_AMPR", "KC_LPRN", "KC_RPRN", "KC_COLN", "KC_SCLN", "KC_CIRC", "KC_GRV", "KC_AT", "KC_HASH", "KC_PERC", "LSFT(KC_7)", "KC_LBRC", "KC_RBRC", "KC_ASTR", "KC_PSLS", "KC_PPLS", "KC_UNDS", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_LCBR", "KC_RCBR", "KC_NO", "KC_LT", "KC_GT", "KC_EXLM", "KC_NO", "KC_NO", "KC_QUOT", "KC_EQL", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_TRNS", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO"],
+            ["KC_F1", "KC_F2", "KC_F3", "KC_F4", "KC_F5", "RGB_TOG", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_F6", "KC_F7", "KC_F8", "KC_F9", "KC_F10", "RGB_MOD", "RGB_SPI", "RGB_HUI", "RGB_SAI", "RGB_VAI", "KC_F11", "KC_F12", "KC_NO", "KC_NO", "KC_NO", "RGB_RMOD", "RGB_SPD", "RGB_HUD", "RGB_SAD", "RGB_VAD", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_NO", "KC_BTN1", "KC_BTN2", "KC_NO", "KC_NO", "KC_MS_U", "KC_MS_R", "KC_TRNS", "KC_NO", "KC_MS_L", "KC_MS_D"]
+        ],
+        "author": ""
+    }
+*/
+
+    // keymap_jp.hを参考に作った、JIS環境で入力したい記号→USキーの対応表
+    const jis_us_array = [
+        ['KC_ZKHK', 'KC_GRV'], // Zenkaku ↔︎ Hankaku ↔ Kanji (半角 ↔ 全角 ↔ 漢字)
+        ['KC_CIRC', 'KC_EQL'], // ^
+        ['KC_YEN', 'KC_INT3'], // ¥
+        ['KC_AT', 'KC_LBRC'], // @
+        ['KC_LBRC', 'KC_RBRC'], // [
+        ['KC_EISU', 'KC_CAPS'], // Eisū (英数)
+        ['KC_COLN', 'KC_QUOT'], // :
+        ['KC_RBRC', 'KC_NUHS'], // ]
+        ['KC_BSLS', 'KC_INT1'], // (backslash)
+        ['KC_MHEN', 'KC_INT5'], // Muhenkan (無変換)
+        ['KC_HENK', 'KC_INT4'], // Henkan (変換)
+        ['KC_KANA', 'KC_INT2'], // Katakana ↔ Hiragana ↔ Rōmaji (カタカナ ↔ ひらがな ↔ ローマ字)
+        ['KC_HASH', 'S(KC_3)'], // #
+        ['KC_AMPR', 'S(KC_6)'], // &
+        ['KC_QUOT', 'S(KC_7)'], // '
+        ['KC_LPRN', 'S(KC_8)'], // (
+        ['KC_RPRN', 'S(KC_9)'], // )
+        ['KC_EQL', 'S(KC_MINS)'], // =
+        ['KC_PEQL', 'S(KC_MINS)'], // =
+        ['KC_TILD', 'S(KC_EQL)'], // ~
+        ['KC_PIPE', 'S(KC_INT3)'], // |
+        ['KC_GRV', 'S(KC_LBRC)'], // `
+        ['KC_LCBR', 'S(KC_RBRC)'], // {
+        ['KC_PLUS', 'S(KC_SCLN)'], // +
+        ['KC_PPLS', 'S(KC_SCLN)'], // +
+        ['KC_ASTR', 'S(KC_QUOT)'], // *
+        ['KC_PAST', 'S(KC_QUOT)'], // *
+        ['KC_RCBR', 'S(KC_NUHS)'], // }
+        ['KC_UNDS', 'S(KC_INT1)'], // _
+        ['KC_ZHTG', 'KC_GRV'], // Zenkaku ↔︎ Hankaku ↔ Kanji (半角 ↔ 全角 ↔ 漢字)
+        ['KC_DQUO', 'S(KC_2)'], // "
+        ['KC_MEISU', 'KC_LANG2'], // Eisū (英数) on macOS
+        ['KC_MKANA', 'KC_LANG1'] // Kana (かな) on macOS
+    ]
+
+    let work_as_jis = (keymap) => {
+        // 置換のためにいったん文字列にする
+        let layers = JSON.stringify(keymap.layers, null, 3);
+
+        // keymap_jp.hをもとにキーコードを置換する
+        jis_us_array.forEach(key => {
+            console.log(key[0] + " -> " + key[1]);
+            // 置換したキーは、二重置換を防ぐためにいったんJPとして置いておく
+            layers = layers.replace(key[0], key[1].replace('KC_', 'JP_'));
+        });
+
+        // JPをKCに直して完成
+        layers = layers.replace(/JP_/g, 'KC_');
+
+        // keymap書き戻して
+        keymap.layers = JSON.parse(layers);
+
+        // 変換を掛けたバージョンだってわかるようにメモして
+        keymap.keymap = keymap.keymap + ' jis like.';
+
+        return keymap
+    }
+
+    let execute_convert = () => {
+
+        try {
+            let input = JSON.parse(document.getElementById("input").value);
+            let output = work_as_jis(input);
+            document.getElementById("output").value = JSON.stringify(output);
+
+            // 変換後のjspnを自動でダウンロード
+            let blob = new Blob([document.getElementById("output").value], { type: "text/json" });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = output.keyboard + '-' + output.keymap + '-keymap.json';
+            link.click();
+            alert("変換しました！");
+
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+</script>
+
+</html>
