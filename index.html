@@ -56,7 +56,7 @@
 <hr>
     <form>
     <label>Convert log</label><br>
-    <textarea id="output"></textarea>
+    <textarea id="log"></textarea>
 </form>
 
     <h2>Memo</h2>
@@ -126,7 +126,7 @@
     ]
 
     let input_area = document.getElementById("input");
-    let log_area = document.getElementById("output");
+    let log_area = document.getElementById("log");
 
     let work_as_jis = (keymap) => {
         // 置換のためにいったん文字列にする
@@ -161,7 +161,7 @@
             let output = work_as_jis(input);
 
             // 変換後のjspnを自動でダウンロード
-            let blob = new Blob([document.getElementById("output").value], { type: "text/json" });
+            let blob = new Blob([JSON.stringify(output)], { type: "text/json" });
             let link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = output.keyboard + '-' + output.keymap + '.json';
@@ -169,7 +169,7 @@
             //            alert("変換しました！");
 
         } catch (e) {
-            document.getElementById("output").value = e;
+            log_area.value = e;
         }
     }
 
