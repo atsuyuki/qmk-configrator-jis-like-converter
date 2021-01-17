@@ -2,16 +2,12 @@
 
 <head>
     <link rel="stylesheet" href="https://newcss.net/new.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
-    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
 
     <style>
         * {
             font-family: 'Noto Sans JP', sans-serif;
-
             margin: 10;
-
         }
 
         textarea,
@@ -62,6 +58,7 @@
     <h2>Memo</h2>
     <ul>
         <li>変換できるのは、QMK Configuratorの「Shifted Symbles」欄から選んだ記号です。<code>S(KC_2)</code>とか設定したキーは、いまのところ変換できません。</li>
+        <li>もしかしたら抜けてる記号があるかも。</li>
         <li>バグがあるかも。</li>
         <li><a href="https://github.com/atsuyuki/qmk-configrator-jis-like-converter" target="_blank">Github</a></li>
     </ul>
@@ -138,12 +135,12 @@
 
             log_area.value += key[0] + '\t->\t' + key[1] + '\n';
 
-            // 置換したキーは、二重置換を防ぐためにいったんJPとして置いておく
-            layers = layers.replace(key[0], key[1].replace('KC_', 'JP_'));
+            // 置換したキーは、二重置換を防ぐためにいったんフラグをつけておく
+            layers = layers.replace(`"${key[0]}"`, `"${key[1]}🍣"`);
         });
 
-        // JPをKCに直して完成
-        layers = layers.replace(/JP_/g, 'KC_');
+        // フラグを外す
+        layers = layers.replace(/🍣/g, '');
 
         // keymap書き戻して
         keymap.layers = JSON.parse(layers);
@@ -169,7 +166,7 @@
             //            alert("変換しました！");
 
         } catch (e) {
-            log_area.value = e;
+            log_area.value = `😨 ${e}`;
         }
     }
 
