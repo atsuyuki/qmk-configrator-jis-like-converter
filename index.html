@@ -1,7 +1,8 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://newcss.net/new.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spcss@0.6.0">
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
 
     <style>
@@ -10,13 +11,14 @@
             margin: 10;
         }
 
-        textarea,
-        button {
-            width: 100%;
-        }
 
         textarea {
+            width: 100%;
             height: 150px;
+        }
+
+        #log {
+            background-color: gray;
         }
     </style>
 </head>
@@ -25,10 +27,12 @@
     <h1>QMK Configuratorのキーマップを、ナンチャッテJIS対応に変換するスクリプト</h1>
     <h2>Overview</h2>
     <p>
-        <a href="https://config.qmk.fm/" target="_brank">QMK_Configurator</a>で作ったキーマップを、JIS設定の環境用に変換するスクリプトです。US↔JISで違う記号のキーコードだけ文字列置換する力技仕様。
+        <a href="https://config.qmk.fm/"
+            target="_brank">QMK_Configurator</a>で作ったキーマップを、JIS設定の環境用に変換するスクリプトです。US↔JISで違う記号のキーコードだけ文字列置換する力技仕様。
     </p>
     <p>
-        QMK Configuratorでビルドして<a href="https://github.com/qmk/qmk_toolbox">QMK&nbsp;Toolbox</a>で書き込めば、QMK環境のセットアップいらずで日本語配列の自作キーボードを設定できるはず。
+        QMK Configuratorでビルドして<a
+            href="https://github.com/qmk/qmk_toolbox">QMK&nbsp;Toolbox</a>で書き込めば、QMK環境のセットアップいらずで日本語配列の自作キーボードを設定できるはず。
     </p>
     <p>
         本当はQMKの<a href="https://github.com/qmk/qmk_firmware/blob/master/quantum/keymap_extras/keymap_jp.h"
@@ -47,20 +51,20 @@
     <form>
         <label>INPUT</label><br>
         <textarea id="input"></textarea>
-        <button type="button" onclick="execute_convert()">🔥 Convert & Download Keymap.json 🔥</button>
+        <button type="button" onclick="execute_convert()">🔥　Convert & Download Keymap.json　🔥</button>
     </form>
-<hr>
+
     <form>
-    <label>Convert log</label><br>
-    <textarea id="log"></textarea>
-</form>
+        <label>Convert log</label><br>
+        <textarea id="log"></textarea>
+    </form>
 
     <h2>Memo</h2>
     <ul>
-        <li>変換できるのは、QMK Configuratorの「Shifted Symbles」欄から選んだ記号です。<code>S(KC_2)</code>とか設定したキーは、いまのところ変換できません。</li>
-        <li>もしかしたら抜けてる記号があるかも。</li>
-        <li>バグがあるかも。</li>
-        <li><a href="https://github.com/atsuyuki/qmk-configrator-jis-like-converter" target="_blank">Github</a></li>
+        <li>変換できるのは、QMK Configuratorの「Shifted Symbles」欄から選んだ記号です。<code>S(KC_2)</code>とかで設定したキーは、いまのところ変換できません。</li>
+        <li>もしかしたら抜けてる記号があるかも。バグもあるかも。</li>
+        <li><a href="https://github.com/atsuyuki/qmk-configrator-jis-like-converter" target="_blank">View on Github</a>
+        </li>
     </ul>
 </body>
 
@@ -86,7 +90,7 @@
     }
 
     // keymap_jp.hを参考に作った、JIS環境で入力したい記号→USキーの対応表
-    const jis_us_array = [
+    const jp_us_list = [
         ['KC_ZKHK', 'KC_GRV'], // Zenkaku ↔︎ Hankaku ↔ Kanji (半角 ↔ 全角 ↔ 漢字)
         ['KC_CIRC', 'KC_EQL'], // ^
         ['KC_YEN', 'KC_INT3'], // ¥
@@ -125,13 +129,13 @@
     let input_area = document.getElementById("input");
     let log_area = document.getElementById("log");
 
-    let work_as_jis = (keymap) => {
+    let us4jp = (keymap) => {
         // 置換のためにいったん文字列にする
         let layers = JSON.stringify(keymap.layers, null, 3);
         log_area.value = ''
 
         // keymap_jp.hをもとにキーコードを置換する
-        jis_us_array.forEach(key => {
+        jp_us_list.forEach(key => {
 
             log_area.value += key[0] + '\t->\t' + key[1] + '\n';
 
@@ -148,6 +152,7 @@
         // 変換を掛けたバージョンだってわかるようにメモして
         keymap.keymap = keymap.keymap + '-jis-like';
 
+        // アウトプット
         return keymap
     }
 
@@ -155,7 +160,7 @@
 
         try {
             let input = JSON.parse(input_area.value)
-            let output = work_as_jis(input);
+            let output = us4jp(input);
 
             // 変換後のjspnを自動でダウンロード
             let blob = new Blob([JSON.stringify(output)], { type: "text/json" });
