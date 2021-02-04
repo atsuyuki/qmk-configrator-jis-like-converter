@@ -24,15 +24,15 @@
 </head>
 
 <body>
-    <h1>QMK Configuratorのキーマップを、ナンチャッテJIS対応に変換するスクリプト</h1>
+    <h1>QMK Configuratorで作った自作キーボードのキーマップを、ナンチャッテJIS対応に変換するスクリプト</h1>
     <h2>Overview</h2>
     <p>
         <a href="https://config.qmk.fm/"
-            target="_brank">QMK_Configurator</a>で作ったキーマップを、JIS設定の環境用に変換するスクリプトです。US↔JISで違う記号のキーコードだけ文字列置換する力技仕様。
+            target="_brank">QMK_Configurator</a>で作ったキーマップを、記号だけ日本語配列相当に変換するスクリプトです。
     </p>
     <p>
         QMK Configuratorでビルドして<a
-            href="https://github.com/qmk/qmk_toolbox">QMK&nbsp;Toolbox</a>で書き込めば、QMK環境のセットアップいらずで日本語配列の自作キーボードを設定できるはず。
+            href="https://github.com/qmk/qmk_toolbox">QMK&nbsp;Toolbox</a>で書き込めば、QMK環境のセットアップいらずで日本語配列対応のキーマップを設定できます。
     </p>
     <p>
         本当はQMKの<a href="https://github.com/qmk/qmk_firmware/blob/master/quantum/keymap_extras/keymap_jp.h"
@@ -61,8 +61,8 @@
 
     <h2>Memo</h2>
     <ul>
-        <li>変換できるのは、QMK Configuratorの「Shifted Symbles」欄から選んだ記号です。<code>S(KC_2)</code>とかで設定したキーは、いまのところ変換できません。</li>
-        <li>もしかしたら抜けてる記号があるかも。バグもあるかも。</li>
+        <li>変換できるのは、QMK Configuratorの「Shifted Symbles」欄から選んだ記号です。<code>S(KC_2)</code>とかで設定したキーは、いまのところ対応してません。</li>
+        <li>もしかしたら抜けてる記号があるかも。あとバグもあるかも。</li>
         <li><a href="https://github.com/atsuyuki/qmk-configrator-jis-like-converter" target="_blank">View on Github</a>
         </li>
     </ul>
